@@ -29,3 +29,13 @@
 - [x] Implement local controlled AI catalog tools and use them to ground assistant responses.
 - [x] Add focused Vitest coverage for catalog tools and cart calculations.
 - [x] Document the demo UI boundary and production integration plan in README/docs.
+
+## Backend foundation and onboarding
+
+- [x] Add a modular backend foundation under services/api with Java 21 and Spring Boot conventions documented for future implementation.
+- [x] Define versioned API/domain contracts for auth, catalog, cart, orders, payments, reviews, admin, and AI tools.
+- [x] Add PostgreSQL/Flyway/Docker environment templates without committing secrets or pretending live integrations are configured.
+- [x] Add backend health/readiness and error-response contract documentation.
+- [x] Add onboarding guide explaining repository structure, local setup, code flow, domain vocabulary, and contribution workflow.
+- [x] Add code-explanation documentation for the frontend shell, catalog tools, cart state, route handling, and backend integration boundary.
+- [x] Add validation checks for the new contracts and documentation references.

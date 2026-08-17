@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: luma-commerce-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/luma}
+    username: ${DATABASE_USERNAME:luma}
+    password: ${DATABASE_PASSWORD:change-me}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,readiness
+  endpoint:
+    health:
+      probes:
+        enabled: true
+info:
+  app:
+    name: Luma Commerce API
+    version: ${APP_VERSION:0.1.0-SNAPSHOT}
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
