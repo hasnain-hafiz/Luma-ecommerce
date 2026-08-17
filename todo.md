@@ -39,3 +39,18 @@
 - [x] Add onboarding guide explaining repository structure, local setup, code flow, domain vocabulary, and contribution workflow.
 - [x] Add code-explanation documentation for the frontend shell, catalog tools, cart state, route handling, and backend integration boundary.
 - [x] Add validation checks for the new contracts and documentation references.
+
+## Catalog backend slice
+
+- [x] Add PostgreSQL catalog tables for categories, brands, products, and product images with indexes and constraints.
+- [x] Add Flyway migration and seed-free schema documentation for the catalog tables.
+- [x] Add Java catalog entities, DTOs, repository interfaces, and service contracts.
+- [x] Implement public catalog search, category/brand/price/rating/availability filtering, sorting, pagination, and product detail contracts.
+- [x] Implement ADMIN-only product create/update/archive contracts without seeding fake customer content.
+- [x] Document the catalog request flow and frontend integration boundary.
+- [x] Add catalog-specific automated tests and run available source/repository validation; Java execution remains configured for CI because Maven/JDK are unavailable locally.
+
+## Catalog authorization hardening
+
+- [x] Add Spring Security role enforcement for `/api/v1/admin/products` using the exact ADMIN role.
+- [x] Add forbidden-access coverage for non-admin product writes and document the authentication integration seam.
