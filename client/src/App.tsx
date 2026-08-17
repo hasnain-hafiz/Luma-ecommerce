@@ -13,6 +13,12 @@ function Router() {
       <Route path="/shop" component={Home} />
       <Route path="/product/:slug" component={Home} />
       <Route path="/assistant" component={Home} />
+      <Route path="/login" component={Home} />
+      <Route path="/register" component={Home} />
+      <Route path="/forgot-password" component={Home} />
+      <Route path="/checkout" component={Home} />
+      <Route path="/checkout/confirmation" component={Home} />
+      <Route path="/order/:id" component={Home} />
       <Route path="/account/:section" component={Home} />
       <Route path="/admin/:section" component={Home} />
       <Route path="/404" component={NotFound} />

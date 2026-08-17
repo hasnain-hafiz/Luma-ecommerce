@@ -21,11 +21,11 @@
 ## Follow-up validation gaps
 
 - [x] Add a dedicated global wishlist affordance and a functional wishlist view.
-- [ ] Make catalog filtering, sorting, pagination, loading, and error states interactive.
+- [x] Make catalog filtering, sorting, pagination, loading, and error states interactive.
 - [x] Add cart persistence, clear-cart action, and explicit validation states.
-- [ ] Add dedicated login, register, reset-password, checkout, confirmation, order-detail, and review flows.
-- [ ] Add customer address management and explicit CUSTOMER / ADMIN role presentation.
-- [ ] Add admin management navigation for products, categories, inventory, orders, reviews, and customers.
+- [x] Add dedicated login, register, reset-password, checkout, confirmation, order-detail, and review flows.
+- [x] Add customer address management and explicit CUSTOMER / ADMIN role presentation.
+- [x] Add admin management navigation for products, categories, inventory, orders, reviews, and customers.
 - [x] Implement local controlled AI catalog tools and use them to ground assistant responses.
 - [x] Add focused Vitest coverage for catalog tools and cart calculations.
 - [x] Document the demo UI boundary and production integration plan in README/docs.
