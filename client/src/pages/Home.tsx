@@ -1,33 +1,141 @@
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useRoute } from "wouter";
+import {
+  ArrowRight, Bot, Check, ChevronDown, ChevronLeft, ChevronRight, CircleUserRound,
+  Heart, Minus, Package, Plus, Search, ShoppingBag, SlidersHorizontal, Sparkles,
+  Star, Truck, X, Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
-export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+const uploadedEditorial = "/manus-storage/editorial-grid_10e23950.jpg";
+const uploadedSneakers = "/manus-storage/black-sneakers_7c50c28b.jpg";
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+const products = [
+  { id: "01", slug: "orbit-runner", name: "Orbit Runner", brand: "Norda", category: "Movement", price: 148, compareAt: 180, image: uploadedSneakers, tone: "#d8e0e6", tag: "New drop", detail: "A lightweight everyday runner with a quiet, sculptural profile." },
+  { id: "02", slug: "form-01-headphones", name: "Form 01 Headphones", brand: "Aether", category: "Objects", price: 299, compareAt: null, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=85", tone: "#dad7d1", tag: "Best seller", detail: "A focused listening experience, tuned for long studio days." },
+  { id: "03", slug: "daylight-pack", name: "Daylight Pack", brand: "Topo Designs", category: "Carry", price: 125, compareAt: 155, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1000&q=85", tone: "#c5d4db", tag: "Low stock", detail: "A compact travel pack for the hours between the office and outdoors." },
+  { id: "04", slug: "still-canvas-tote", name: "Still Canvas Tote", brand: "Luma Objects", category: "Carry", price: 68, compareAt: null, image: "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1000&q=85", tone: "#e5dfd6", tag: "Everyday", detail: "Heavyweight canvas, oversized proportions, and an easy shoulder drop." },
+  { id: "05", slug: "arc-lamp", name: "Arc Lamp", brand: "Kanso", category: "Objects", price: 210, compareAt: null, image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1000&q=85", tone: "#e3dfd7", tag: "Studio pick", detail: "A warm pool of light for late work and slow mornings." },
+  { id: "06", slug: "field-jacket", name: "Field Jacket", brand: "Aster Row", category: "Apparel", price: 240, compareAt: 290, image: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1000&q=85", tone: "#c6cbc6", tag: "Layer up", detail: "A crisp cotton layer with a relaxed shape and considered utility." },
+];
 
+type Product = (typeof products)[number];
+
+type CartLine = Product & { quantity: number };
+
+const money = (value: number) => `$${value.toLocaleString("en-US")}`;
+
+// Controlled catalog tools: production adapters can call the server equivalents without exposing raw data access to the model.
+const catalogTools = {
+  searchProducts: (query: string) => products.filter(product => `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(query.toLowerCase())),
+  getProduct: (slug: string) => products.find(product => product.slug === slug),
+  compareProducts: (slugs: string[]) => products.filter(product => slugs.includes(product.slug)),
+  getProductsByCategory: (category: string) => products.filter(product => product.category.toLowerCase() === category.toLowerCase()),
+  getProductAvailability: (slug: string) => ({ slug, available: Boolean(products.find(product => product.slug === slug)), message: "Availability is verified by the catalog service at checkout." }),
+};
+
+function assistantAnswer(query: string) {
+  const matches = catalogTools.searchProducts(query);
+  if (matches.length) return `I found ${matches.slice(0, 3).map(product => `${product.name} (${money(product.price)})`).join(", ")}. These are real pieces in the current catalog; availability is checked again at checkout.`;
+  if (query.toLowerCase().includes("movement")) return `The Movement edit includes ${catalogTools.getProductsByCategory("Movement").map(product => `${product.name} (${money(product.price)})`).join(" and ")}.`;
+  return "I can search the live catalog for that. Try a budget, category, brand, or use case — I will only recommend products returned by the catalog tools.";
+}
+
+function Header({ cartCount, onCart }: { cartCount: number; onCart: () => void }) {
+  const [, navigate] = useLocation();
+  const [query, setQuery] = useState("");
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
+    <>
+      <div className="announcement"><span><Zap size={13} fill="currentColor" /> New season, considered essentials.</span><span className="announcement-note">Free shipping over $150 · 30-day returns</span></div>
+      <header className="site-header">
+        <Link href="/" className="wordmark">LUMA<span>®</span></Link>
+        <nav className="desktop-nav" aria-label="Primary navigation">
+          <Link href="/shop">Shop</Link><a href="#journal">Journal</a><a href="#about">About</a><Link href="/assistant">AI concierge <Sparkles size={13} /></Link>
+        </nav>
+        <div className="header-actions">
+          <form className="header-search" onSubmit={(event) => { event.preventDefault(); navigate(`/shop?search=${query}`); }}><Search size={16} /><input aria-label="Search products" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the collection" /></form>
+          <Link className="icon-link user-link" href="/account/profile" aria-label="Account"><CircleUserRound size={21} /></Link>
+          <Link className="icon-link" href="/account/wishlist" aria-label="Wishlist"><Heart size={19} /></Link><button className="icon-link bag-button" onClick={onCart} aria-label={`Open bag with ${cartCount} items`}><ShoppingBag size={20} /><span>{cartCount}</span></button>
+        </div>
+      </header>
+    </>
   );
+}
+
+function ProductCard({ product, onAdd }: { product: Product; onAdd: (product: Product) => void }) {
+  const [liked, setLiked] = useState(false);
+  return <article className="product-card">
+    <div className="product-image-wrap" style={{ background: product.tone }}>
+      <Link href={`/product/${product.slug}`} className="product-image-link"><img src={product.image} alt={product.name} /></Link>
+      <button className={`heart-button ${liked ? "is-liked" : ""}`} onClick={() => { setLiked(!liked); toast(liked ? "Removed from wishlist" : "Saved to wishlist"); }} aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}><Heart size={17} fill={liked ? "currentColor" : "none"} /></button>
+      <span className="product-tag">{product.tag}</span>
+    </div>
+    <div className="product-meta"><div><p className="eyebrow">{product.brand}</p><Link href={`/product/${product.slug}`} className="product-name">{product.name}</Link></div><button className="mini-add" onClick={() => onAdd(product)} aria-label={`Add ${product.name} to bag`}><Plus size={17} /></button></div>
+    <div className="product-bottom"><span>{money(product.price)}</span>{product.compareAt && <del>{money(product.compareAt)}</del>}<span className="no-rating"><Star size={12} /> Reviews soon</span></div>
+  </article>;
+}
+
+function CartSheet({ open, onOpenChange, cart, onUpdate, onRemove }: { open: boolean; onOpenChange: (open: boolean) => void; cart: CartLine[]; onUpdate: (id: string, quantity: number) => void; onRemove: (id: string) => void }) {
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return <Sheet open={open} onOpenChange={onOpenChange}><SheetContent className="cart-sheet"><SheetHeader><SheetTitle>Your bag <span>{cart.length ? `${cart.length} items` : "is waiting"}</span></SheetTitle></SheetHeader>{cart.length === 0 ? <div className="empty-cart"><ShoppingBag size={36} strokeWidth={1.2} /><h3>Your bag is empty.</h3><p>Start with something made to be kept.</p><Button onClick={() => onOpenChange(false)}>Explore the collection</Button></div> : <><div className="cart-lines">{cart.map(item => <div className="cart-line" key={item.id}><img src={item.image} alt="" /><div className="cart-line-info"><p className="eyebrow">{item.brand}</p><h4>{item.name}</h4><strong>{money(item.price)}</strong><div className="qty-control"><button onClick={() => onUpdate(item.id, Math.max(0, item.quantity - 1))}><Minus size={13} /></button><span>{item.quantity}</span><button onClick={() => onUpdate(item.id, item.quantity + 1)}><Plus size={13} /></button></div></div><button className="remove-line" onClick={() => onRemove(item.id)} aria-label={`Remove ${item.name}`}><X size={15} /></button></div>)}</div><div className="cart-summary"><div><span>Subtotal</span><strong>{money(subtotal)}</strong></div><p>Taxes and shipping are calculated at checkout. The final total is always validated by our server.</p><Button className="full-button" onClick={() => { onOpenChange(false); toast("Checkout session ready — Stripe handoff is next"); }}>Continue to checkout <ArrowRight size={16} /></Button><button className="view-orders" onClick={() => onUpdate("__clear__", 0)}>Clear bag</button></div></>}</SheetContent></Sheet>;
+}
+
+function HomeView({ onAdd, onCart }: { onAdd: (product: Product) => void; onCart: () => void }) {
+  return <main>
+    <section className="hero-section"><div className="hero-copy"><p className="eyebrow light-eyebrow"><span className="eyebrow-dot" /> Luma / 01 — Objects for an intentional life</p><h1>Less, but <em>better.</em></h1><p className="hero-subtitle">A considered edit of everyday things — chosen for how they feel, function, and live with you.</p><div className="hero-actions"><Link href="/shop" className="button button-light">Shop the edit <ArrowRight size={16} /></Link><a href="#journal" className="text-link light-link">Read our approach <ChevronRight size={14} /></a></div></div><div className="hero-art"><div className="hero-orb orb-one" /><div className="hero-orb orb-two" /><div className="hero-caption"><span>Vol. 01</span><span>Objects with a point of view</span></div></div></section>
+    <section className="ticker"><span>THE NEW EVERYDAY</span><span>QUIETLY DISTINCT</span><span>DESIGNED TO LAST</span><span>THE NEW EVERYDAY</span></section>
+    <section className="section-block collection-section"><div className="section-heading"><div><p className="eyebrow">The collection</p><h2>Good things, <em>well made.</em></h2></div><Link className="text-link" href="/shop">View all pieces <ArrowRight size={15} /></Link></div><div className="product-grid">{products.slice(0, 4).map(product => <ProductCard key={product.id} product={product} onAdd={onAdd} />)}</div></section>
+    <section className="category-band"><div className="category-intro"><p className="eyebrow">Browse by intention</p><h2>Find your <em>everyday.</em></h2><p>Move, make, carry, and live well with a collection that keeps the noise out.</p><Link className="button button-dark" href="/shop">Explore categories <ArrowRight size={16} /></Link></div><div className="category-collage"><div className="collage-image collage-large"><img src={uploadedEditorial} alt="A considered arrangement of bags and accessories" /></div><div className="category-card card-blue"><span>01</span><strong>Move</strong><small>Performance, without the noise</small></div><div className="category-card card-yellow"><span>02</span><strong>Carry</strong><small>For the spaces between</small></div><div className="category-card card-cream"><span>03</span><strong>Make</strong><small>Tools for a slower practice</small></div></div></section>
+    <section id="journal" className="journal-section"><div className="journal-image"><img src={uploadedSneakers} alt="Black sneakers photographed against a graphic backdrop" /><span>Field notes / 004</span></div><div className="journal-copy"><p className="eyebrow">The Luma journal</p><h2>Objects that earn their <em>place.</em></h2><p>We believe the best products disappear into your life — until you notice how much better the day feels with them in it.</p><a className="text-link" href="#about">Read the journal <ArrowRight size={15} /></a><div className="journal-stat"><strong>01</strong><span>Curated, not crowded.<br />Every piece has a reason to be here.</span></div></div></section>
+    <section className="assistant-callout"><div><p className="eyebrow">Meet your new shopping ritual</p><h2>Not sure where to start?<br /><em>Ask Luma.</em></h2><p>Our catalog-aware assistant can help you compare, narrow down, and find your next everyday essential.</p></div><Link href="/assistant" className="assistant-orb"><Bot size={26} /><span>Open AI concierge <ArrowRight size={16} /></span></Link></section>
+  </main>;
+}
+
+function ShopView({ onAdd }: { onAdd: (product: Product) => void }) {
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [query] = useState(() => new URLSearchParams(window.location.search).get("search") || "");
+  const filtered = useMemo(() => products.filter(product => !query || `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(query.toLowerCase())), [query]);
+  return <main className="shop-page"><div className="shop-hero"><div><p className="eyebrow">The full edit / 24 pieces</p><h1>Shop <em>the collection.</em></h1></div><p>Thoughtful objects for movement, making, carrying, and the everyday rituals in between.</p></div><div className="shop-toolbar"><button className="filter-trigger" onClick={() => setFilterOpen(!filterOpen)}><SlidersHorizontal size={16} /> Filters <span>3</span></button><span className="result-count">{filtered.length} pieces</span><button className="sort-trigger">Sort: Featured <ChevronDown size={15} /></button></div><div className={`filter-panel ${filterOpen ? "open" : ""}`}><div><p className="eyebrow">Category</p><label><input type="checkbox" /> Movement</label><label><input type="checkbox" /> Carry</label><label><input type="checkbox" /> Objects</label></div><div><p className="eyebrow">Availability</p><label><input type="checkbox" /> In stock</label><label><input type="checkbox" /> Low stock</label></div><div><p className="eyebrow">Price</p><label><input type="checkbox" /> Under $100</label><label><input type="checkbox" /> $100 — $250</label><label><input type="checkbox" /> $250+</label></div></div>{filtered.length ? <div className="product-grid shop-grid">{filtered.map(product => <ProductCard key={product.id} product={product} onAdd={onAdd} />)}</div> : <div className="empty-state"><Search size={28} /><h3>No pieces found.</h3><p>Try a broader search or browse the full collection.</p></div>}<div className="pagination"><button disabled><ChevronLeft size={15} /></button><span className="active-page">01</span><span>02</span><span>03</span><button><ChevronRight size={15} /></button></div></main>;
+}
+
+function ProductView({ product, onAdd }: { product: Product; onAdd: (product: Product) => void }) {
+  const [quantity, setQuantity] = useState(1); const [liked, setLiked] = useState(false);
+  return <main className="detail-page"><Link href="/shop" className="back-link"><ChevronLeft size={15} /> Back to collection</Link><div className="detail-grid"><div className="detail-gallery"><div className="detail-main-image" style={{ background: product.tone }}><img src={product.image} alt={product.name} /></div><div className="thumb-row"><div className="thumb active"><img src={product.image} alt="" /></div><div className="thumb"><img src={uploadedSneakers} alt="" /></div><div className="thumb plain-thumb" /></div></div><div className="detail-copy"><p className="eyebrow">{product.brand} / {product.category}</p><h1>{product.name}</h1><div className="detail-price"><strong>{money(product.price)}</strong>{product.compareAt && <><del>{money(product.compareAt)}</del><Badge>Save {money(product.compareAt - product.price)}</Badge></>}</div><div className="review-line"><span className="no-rating"><Star size={14} /> No reviews yet</span><span className="sku">SKU / LM-{product.id}01</span></div><p className="detail-description">{product.detail} Designed for the daily rhythm, with materials chosen to wear in rather than wear out.</p><div className="stock-line"><span className="stock-dot" /> In stock · ships within 2 business days</div><div className="purchase-row"><div className="qty-control large"><button onClick={() => setQuantity(Math.max(1, quantity - 1))}><Minus size={14} /></button><span>{quantity}</span><button onClick={() => setQuantity(quantity + 1)}><Plus size={14} /></button></div><Button className="add-button" onClick={() => { for (let i = 0; i < quantity; i++) onAdd(product); }}>Add to bag <ShoppingBag size={16} /></Button><button className={`detail-heart ${liked ? "is-liked" : ""}`} onClick={() => setLiked(!liked)} aria-label="Toggle wishlist"><Heart size={19} fill={liked ? "currentColor" : "none"} /></button></div><div className="detail-accordions"><details open><summary>Details <Plus size={15} /></summary><p>Thoughtfully made with an honest material story, a generous fit, and considered details that make the everyday easier.</p></details><details><summary>Specifications <Plus size={15} /></summary><p>Materials, dimensions, care instructions, and country of origin are verified by the catalog service.</p></details><details><summary>Shipping & returns <Plus size={15} /></summary><p>Free shipping over $150. Returns accepted within 30 days in original condition.</p></details></div></div></div><section className="related-section"><div className="section-heading"><div><p className="eyebrow">You may also like</p><h2>Complete the <em>ritual.</em></h2></div></div><div className="product-grid">{products.filter(item => item.id !== product.id).slice(0, 3).map(item => <ProductCard key={item.id} product={item} onAdd={onAdd} />)}</div></section></main>;
+}
+
+function AssistantView() {
+  const [message, setMessage] = useState(""); const [messages, setMessages] = useState([{ role: "assistant", text: "Hi, I’m Luma. Tell me what you’re looking for and I’ll help you narrow it down using the live collection." }]);
+  const send = () => { if (!message.trim()) return; const current = message; setMessages([...messages, { role: "user", text: current }, { role: "assistant", text: assistantAnswer(current) }]); setMessage(""); };
+  return <main className="assistant-page"><div className="assistant-intro"><span className="assistant-mark"><Bot size={24} /></span><p className="eyebrow">Luma AI concierge</p><h1>A better way to<br /><em>find your thing.</em></h1><p>Ask for recommendations, comparisons, or availability. Luma only speaks from catalog data — never guesses prices, products, or stock.</p></div><div className="chat-window"><div className="chat-header"><div><strong>Concierge / live catalog</strong><span><span className="online-dot" /> Ready to help</span></div><Sparkles size={18} /></div><div className="chat-messages">{messages.map((item, index) => <div key={index} className={`chat-message ${item.role}`}><span>{item.role === "assistant" ? <Bot size={15} /> : "You"}</span><p>{item.text}</p></div>)}</div><div className="prompt-chips"><button onClick={() => setMessage("Find a good everyday pack under $150")}>Everyday pack under $150</button><button onClick={() => setMessage("Compare the movement pieces")}>Compare movement pieces</button><button onClick={() => setMessage("What's in stock now?")}>What's in stock now?</button></div><form className="chat-input" onSubmit={(e) => { e.preventDefault(); send(); }}><input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Ask about the collection…" aria-label="Ask the AI concierge" /><button aria-label="Send message"><ArrowRight size={17} /></button></form></div><div className="tool-note"><Check size={15} /><span>Grounded tools: <code>searchProducts</code> <code>getProduct</code> <code>compareProducts</code> <code>getProductsByCategory</code> <code>getProductAvailability</code></span></div></main>;
+}
+
+function WishlistView({ onAdd }: { onAdd: (product: Product) => void }) {
+  const [saved, setSaved] = useState(products.slice(0, 2));
+  return <main className="account-page"><div className="account-sidebar"><p className="eyebrow">Your Luma</p><h1>Saved for<br /><em>later.</em></h1><p className="account-intro">A small edit of pieces you’re considering.</p><Link href="/shop" className="text-link">Continue browsing <ArrowRight size={14} /></Link></div><div className="account-content"><div className="content-heading"><div><p className="eyebrow">Wishlist</p><h2>Your <em>shortlist.</em></h2></div><span>{saved.length} saved</span></div>{saved.length ? <div className="product-grid wishlist-grid">{saved.map(product => <div key={product.id}><ProductCard product={product} onAdd={onAdd} /><button className="wishlist-remove" onClick={() => setSaved(current => current.filter(item => item.id !== product.id))}>Remove from wishlist <X size={13} /></button></div>)}</div> : <div className="empty-state"><Heart size={28} /><h3>Your wishlist is clear.</h3><p>Save pieces as you browse the collection.</p></div>}</div></main>;
+}
+
+function AccountView({ section = "profile" }: { section?: string }) {
+  const [active, setActive] = useState(section);
+  const orders = [{ id: "LM-1048", date: "12 Sep 2024", amount: "$299", status: "PROCESSING", item: "Form 01 Headphones" }, { id: "LM-0982", date: "24 Aug 2024", amount: "$193", status: "DELIVERED", item: "Orbit Runner + Still Canvas Tote" }];
+  return <main className="account-page"><div className="account-sidebar"><p className="eyebrow">Your Luma</p><h1>Good to<br /><em>see you.</em></h1><nav>{["profile", "orders", "wishlist", "addresses"].map(item => <button className={active === item ? "active" : ""} key={item} onClick={() => setActive(item)}>{item[0].toUpperCase() + item.slice(1)} <ArrowRight size={15} /></button>)}</nav><div className="account-help"><span>Need a hand?</span><Link href="/assistant">Ask Luma AI <ArrowRight size={14} /></Link></div></div><div className="account-content">{active === "orders" ? <><div className="content-heading"><div><p className="eyebrow">Your history</p><h2>Orders <em>& deliveries.</em></h2></div><span>2 orders</span></div><div className="order-list">{orders.map(order => <div className="order-card" key={order.id}><div className="order-card-top"><span>{order.id}</span><Badge variant="outline">{order.status}</Badge></div><div className="order-card-body"><div><p className="eyebrow">{order.date}</p><h3>{order.item}</h3></div><strong>{order.amount}</strong><Button variant="outline">View order <ArrowRight size={14} /></Button></div></div>)}</div></> : <><div className="content-heading"><div><p className="eyebrow">Account / {active}</p><h2>{active === "profile" ? <>Your <em>details.</em></> : <>{active[0].toUpperCase() + active.slice(1)} <em>book.</em></>}</h2></div></div><div className="account-form"><label>Full name<input defaultValue="Alex Morgan" /></label><label>Email address<input defaultValue="alex@example.com" /></label><label>Phone number<input placeholder="Add a phone number" /></label><Button>Save changes <Check size={15} /></Button></div></>}</div></main>;
+}
+
+function AdminView() { return <main className="admin-page"><div className="admin-top"><div><p className="eyebrow">Luma / Operations</p><h1>Good morning, <em>team.</em></h1></div><Button variant="outline">View storefront <ArrowRight size={15} /></Button></div><div className="admin-grid"><div className="admin-stat accent"><span>Revenue / 30 days</span><strong>$42,680</strong><small>+18.4% vs last month</small><div className="sparkline" /></div><div className="admin-stat"><span>Orders</span><strong>184</strong><small>12 need attention</small></div><div className="admin-stat"><span>Customers</span><strong>1,248</strong><small>+84 this month</small></div><div className="admin-stat"><span>Low stock</span><strong>08</strong><small>Review inventory</small></div></div><div className="admin-columns"><section className="admin-panel"><div className="panel-heading"><div><p className="eyebrow">Fulfillment queue</p><h2>Recent orders</h2></div><button>View all <ArrowRight size={14} /></button></div><div className="admin-table">{[{ id: "LM-1052", customer: "Maya Chen", item: "Orbit Runner", amount: "$148", status: "PAID" }, { id: "LM-1051", customer: "Jon Bell", item: "Daylight Pack", amount: "$125", status: "PROCESSING" }, { id: "LM-1050", customer: "Sofia Patel", item: "Arc Lamp", amount: "$210", status: "SHIPPED" }, { id: "LM-1049", customer: "Kai Brown", item: "Field Jacket", amount: "$240", status: "PENDING_PAYMENT" }].map(order => <div className="admin-row" key={order.id}><span className="order-id">{order.id}</span><span><strong>{order.customer}</strong><small>{order.item}</small></span><strong>{order.amount}</strong><Badge variant="outline">{order.status}</Badge></div>)}</div></section><section className="admin-panel"><div className="panel-heading"><div><p className="eyebrow">Catalog / attention</p><h2>Inventory watch</h2></div><button>Manage <ArrowRight size={14} /></button></div><div className="inventory-list">{products.slice(0, 4).map((product, index) => <div className="inventory-item" key={product.id}><img src={product.image} alt="" /><span><strong>{product.name}</strong><small>{index === 2 ? "8 units left" : index === 0 ? "14 units left" : "Healthy stock"}</small></span><div className={`inventory-bar level-${index}`} /></div>)}</div></section></div></main>; }
+
+export default function Home() {
+  const [location] = useLocation();
+  const [, productParams] = useRoute("/product/:slug");
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cart, setCart] = useState<CartLine[]>(() => { try { return JSON.parse(localStorage.getItem("luma-cart") || "null") || [{ ...products[1], quantity: 1 }]; } catch { return [{ ...products[1], quantity: 1 }]; } });
+  const addToCart = (product: Product) => { setCart(current => { const next = current.find(item => item.id === product.id) ? current.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }]; localStorage.setItem("luma-cart", JSON.stringify(next)); return next; }); toast(`${product.name} added to your bag`); };
+  const updateCart = (id: string, quantity: number) => setCart(current => id === "__clear__" ? [] : quantity === 0 ? current.filter(item => item.id !== id) : current.map(item => item.id === id ? { ...item, quantity } : item));
+  const removeCart = (id: string) => setCart(current => current.filter(item => item.id !== id));
+  useEffect(() => { localStorage.setItem("luma-cart", JSON.stringify(cart)); }, [cart]);
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const routeView = location.startsWith("/shop") ? <ShopView onAdd={addToCart} /> : location.startsWith("/product/") ? <ProductView product={products.find(item => item.slug === productParams?.slug) || products[0]} onAdd={addToCart} /> : location.startsWith("/assistant") ? <AssistantView /> : location === "/account/wishlist" ? <WishlistView onAdd={addToCart} /> : location.startsWith("/account") ? <AccountView section={location.split("/")[2] || "profile"} /> : location.startsWith("/admin") ? <AdminView /> : <HomeView onAdd={addToCart} onCart={() => setCartOpen(true)} />;
+  return <div className="luma-app"><Header cartCount={cartCount} onCart={() => setCartOpen(true)} />{routeView}<footer className="site-footer"><div><Link href="/" className="wordmark">LUMA<span>®</span></Link><p>Objects for an intentional life.</p></div><div className="footer-links"><div><strong>Explore</strong><Link href="/shop">Shop all</Link><Link href="/assistant">AI concierge</Link><a href="#journal">Journal</a></div><div><strong>Support</strong><Link href="/account/orders">Orders</Link><Link href="/account/profile">Account</Link><a href="#about">Shipping & returns</a></div><div><strong>Stay in the loop</strong><p className="footer-note">Monthly notes on good things.</p><div className="email-field"><input placeholder="Your email" aria-label="Email for updates" /><button aria-label="Subscribe"><ArrowRight size={15} /></button></div></div></div><div className="footer-bottom"><span>© 2024 Luma Objects</span><span>Made with intention</span><span>Privacy · Terms</span></div></footer><CartSheet open={cartOpen} onOpenChange={setCartOpen} cart={cart} onUpdate={updateCart} onRemove={removeCart} /></div>;
 }
