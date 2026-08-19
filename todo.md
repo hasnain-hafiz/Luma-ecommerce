@@ -206,3 +206,21 @@
 ## Final MVC case distinction
 
 - [x] Split foreign-order and nonexistent-order MVC assertions into separate 404 tests.
+
+## Order API reliability improvements
+
+- [x] Add authenticated order API request handling with session credentials and safe 401/403 messaging.
+- [x] Add retry controls for order history and confirmation fetch failures, including retry-in-progress feedback.
+- [x] Validate authenticated and retryable order flows with type checks, tests, and responsive screenshots.
+
+## Auth transport and retry verification
+
+- [x] Wire order requests to a JWT-compatible authenticated transport or documented backend proxy rather than relying only on cookies.
+- [x] Add focused frontend tests for 401/403 handling and retry success/failure transitions.
+- [x] Capture screenshots of authenticated and retry-error states after the transport is wired.
+
+## End-to-end reliability verification
+
+- [x] Connect the order client to an actually issued and refreshed JWT session token or add a documented authenticated proxy bridge.
+- [x] Add and execute frontend tests covering order-history and confirmation auth-required states plus retry transitions.
+- [x] Add deterministic failure-mode controls for preview verification and capture the resulting 401/403 and retry-error screenshots.
