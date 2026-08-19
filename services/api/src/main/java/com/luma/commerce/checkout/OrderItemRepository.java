@@ -3,4 +3,6 @@ package com.luma.commerce.checkout;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderItemRepository extends JpaRepository<OrderItemEntity, UUID> {}
+public interface OrderItemRepository extends JpaRepository<OrderItemEntity, UUID> {
+  java.util.List<OrderItemEntity> findByOrderId(UUID orderId);
+}

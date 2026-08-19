@@ -34,7 +34,19 @@ public class OrderEntity {
   public UUID getId() { return id; }
   public UUID getUserId() { return userId; }
   public CheckoutContracts.OrderStatus getStatus() { return status; }
+  public String getCurrency() { return currency; }
+  public int getSubtotalCents() { return subtotalCents; }
+  public int getShippingCents() { return shippingCents; }
+  public int getTaxCents() { return taxCents; }
   public int getTotalCents() { return totalCents; }
+  public String getShippingName() { return shippingName; }
+  public String getShippingLine1() { return shippingLine1; }
+  public String getShippingLine2() { return shippingLine2; }
+  public String getShippingCity() { return shippingCity; }
+  public String getShippingRegion() { return shippingRegion; }
+  public String getShippingPostalCode() { return shippingPostalCode; }
+  public String getShippingCountry() { return shippingCountry; }
+  public Instant getCreatedAt() { return createdAt; }
   public void applyTotal(CheckoutContracts.AuthoritativeTotal total) { this.currency = total.currency(); this.subtotalCents = total.subtotalCents(); this.shippingCents = total.shippingCents(); this.taxCents = total.taxCents(); this.totalCents = total.totalCents(); this.updatedAt = Instant.now(); }
   public void markPaid() { if (status != CheckoutContracts.OrderStatus.PENDING_PAYMENT) throw new IllegalStateException("Invalid payment transition"); status = CheckoutContracts.OrderStatus.PAID; updatedAt = Instant.now(); }
   public void cancel() { if (status != CheckoutContracts.OrderStatus.PENDING_PAYMENT) throw new IllegalStateException("Only pending orders can be cancelled"); status = CheckoutContracts.OrderStatus.CANCELLED; updatedAt = Instant.now(); }

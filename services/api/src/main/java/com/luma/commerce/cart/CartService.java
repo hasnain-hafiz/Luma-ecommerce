@@ -33,6 +33,9 @@ public class CartService {
   @Transactional
   public void remove(UUID userId, UUID productId) { var cart = ownedCart(userId); items.findByCartIdAndProductId(cart.getId(), productId).ifPresent(items::delete); }
 
+  @Transactional
+  public void clearForUser(UUID userId) { carts.findByUserId(userId).ifPresent(cart -> items.deleteByCartId(cart.getId())); }
+
   private CartEntity ownedCart(UUID userId) { return carts.findByUserId(userId).orElseThrow(); }
   private CartContracts.CartView view(CartEntity cart) { var lines = items.findByCartId(cart.getId()).stream().map(item -> products.findById(item.getProductId()).map(product -> line(item, product)).orElse(null)).filter(java.util.Objects::nonNull).toList(); return new CartContracts.CartView(cart.getId(), lines, lines.stream().mapToInt(CartContracts.CartLine::lineTotalCents).sum(), true); }
   private CartContracts.CartLine line(CartItemEntity item, ProductEntity product) { return new CartContracts.CartLine(item.getId(), product.getId(), product.getName(), product.getSku(), product.getPriceCents(), item.getQuantity(), product.getPriceCents() * item.getQuantity(), product.getInventoryQuantity() >= item.getQuantity()); }

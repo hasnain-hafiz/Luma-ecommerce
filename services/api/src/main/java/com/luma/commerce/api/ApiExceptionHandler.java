@@ -3,6 +3,7 @@ package com.luma.commerce.api;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +18,11 @@ public class ApiExceptionHandler {
         .map(error -> new ApiContracts.FieldError(error.getField(), error.getDefaultMessage() == null ? "Invalid value" : error.getDefaultMessage()))
         .toList();
     return response(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Request validation failed", request, fields);
+  }
+
+  @ExceptionHandler(NoSuchElementException.class)
+  ResponseEntity<ApiContracts.ApiError> notFound(NoSuchElementException ex, HttpServletRequest request) {
+    return response(HttpStatus.NOT_FOUND, "NOT_FOUND", "The requested resource was not found", request, List.of());
   }
 
   @ExceptionHandler(Exception.class)

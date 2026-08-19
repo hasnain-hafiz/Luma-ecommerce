@@ -163,3 +163,46 @@
 
 - [x] Expose draft cancellation through a reachable authenticated checkout API flow and document the endpoint.
 - [x] Add CI documentation/command coverage for executing Maven/Spring checkout tests when Java tooling is available.
+
+## Order history and confirmation flow
+
+- [x] Add ownership-aware order-history and order-detail read contracts with immutable item snapshots and exact status values.
+- [x] Add customer order-history and order-detail controller endpoints with not-found/ownership protection.
+- [x] Clear the paid customer's cart only after a verified, idempotently processed payment webhook.
+- [x] Add backend tests for order ownership, detail snapshots, cart clearing, and duplicate webhook behavior.
+- [x] Build a user-friendly order confirmation page with order number, amount, item details, shipping summary, and current status.
+- [x] Add order-history UI navigation and confirmation-page route handling.
+- [x] Document the payment-to-confirmation flow and validate frontend/backend contracts.
+
+## Confirmation UI verification fixes
+
+- [x] Register the confirmation route with an optional order identifier so confirmation links do not fall through to 404.
+- [x] Fix order-timeline status spacing and numbering so each exact status is legible on desktop and mobile.
+
+## Final order-history hardening
+
+- [x] Protect `/api/v1/orders` as authenticated CUSTOMER-only routes and map missing/foreign orders to explicit not-found responses.
+- [x] Add backend source-contract coverage for owned-vs-foreign order access and not-found detail behavior.
+- [x] Replace hardcoded confirmation/order-history demo data with an API-backed integration seam and safe no-id confirmation behavior.
+- [x] Capture mobile screenshots for order timeline and confirmation layouts after the responsive fixes.
+
+## Final order-history contract corrections
+
+- [x] Add explicit backend contract assertions for foreign-order rejection and missing-order detail responses.
+- [x] Replace order-history demo rows with API-backed loading, empty, and error states.
+- [x] Fix confirmation route parsing for `/checkout/confirmation` without an id and align frontend mapping to the structured order-detail contract.
+
+## Final confirmation contract polish
+
+- [x] Add Spring MVC/controller contract coverage for owned, foreign, and missing order detail responses.
+- [x] Render an explicit no-id or unavailable confirmation state instead of indefinite loading.
+- [x] Map confirmation item image and presentation from immutable order snapshot data without hardcoded item copy.
+
+## Final verification corrections
+
+- [x] Add MVC-level order controller response coverage for owned, foreign, and missing order detail requests.
+- [x] Render an explicit unavailable confirmation state when the order-detail request fails or returns 404.
+
+## Final MVC case distinction
+
+- [x] Split foreign-order and nonexistent-order MVC assertions into separate 404 tests.

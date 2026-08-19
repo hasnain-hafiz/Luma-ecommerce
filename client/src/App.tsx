@@ -18,6 +18,7 @@ function Router() {
       <Route path="/forgot-password" component={Home} />
       <Route path="/checkout" component={Home} />
       <Route path="/checkout/confirmation" component={Home} />
+      <Route path="/checkout/confirmation/:id" component={Home} />
       <Route path="/order/:id" component={Home} />
       <Route path="/account/:section" component={Home} />
       <Route path="/admin/:section" component={Home} />

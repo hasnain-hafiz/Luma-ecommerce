@@ -18,5 +18,12 @@ public class OrderItemEntity {
   private int lineTotalCentsSnapshot;
   private String imageUrlSnapshot;
   protected OrderItemEntity() {}
-  static OrderItemEntity snapshot(UUID orderId, UUID productId, String name, String sku, int unitPrice, int quantity, String imageUrl) { var item = new OrderItemEntity(); item.id = UUID.randomUUID(); item.orderId = orderId; item.productId = productId; item.productNameSnapshot = name; item.skuSnapshot = sku; item.unitPriceCentsSnapshot = unitPrice; item.quantity = quantity; item.lineTotalCentsSnapshot = unitPrice * quantity; item.imageUrlSnapshot = imageUrl; return item; }
+  public static OrderItemEntity snapshot(UUID orderId, UUID productId, String name, String sku, int unitPrice, int quantity, String imageUrl) { var item = new OrderItemEntity(); item.id = UUID.randomUUID(); item.orderId = orderId; item.productId = productId; item.productNameSnapshot = name; item.skuSnapshot = sku; item.unitPriceCentsSnapshot = unitPrice; item.quantity = quantity; item.lineTotalCentsSnapshot = unitPrice * quantity; item.imageUrlSnapshot = imageUrl; return item;   }
+  public UUID getProductId() { return productId; }
+  public String getProductNameSnapshot() { return productNameSnapshot; }
+  public String getSkuSnapshot() { return skuSnapshot; }
+  public int getUnitPriceCentsSnapshot() { return unitPriceCentsSnapshot; }
+  public int getQuantity() { return quantity; }
+  public int getLineTotalCentsSnapshot() { return lineTotalCentsSnapshot; }
+  public String getImageUrlSnapshot() { return imageUrlSnapshot; }
 }

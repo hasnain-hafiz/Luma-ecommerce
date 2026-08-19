@@ -32,3 +32,9 @@ Authenticated customers can cancel an open draft with `POST /api/v1/checkout/dra
 ## Java validation
 
 The sandbox does not include Maven/JDK execution. CI should run `cd services/api && ./mvnw -B test` (or `mvn -B test` when Maven is installed) and should provision PostgreSQL for integration tests. The repository's frontend checks remain `pnpm check && pnpm test`; source-contract checks complement, but do not replace, the Java test run.
+
+## Order history and confirmation
+
+`GET /api/v1/orders` returns only summaries owned by the authenticated JWT subject. `GET /api/v1/orders/{orderId}` repeats the ownership predicate and maps the immutable `order_items` snapshots rather than current catalog records. After a verified payment webhook converts or marks an order `PAID`, the same transaction clears only that customer's cart; duplicate provider events exit before any cart mutation.
+
+The storefront exposes `/account/orders`, `/order/{id}`, and `/checkout/confirmation`. The confirmation view presents the order number, paid amount, shipping summary, immutable item detail, and current exact status, while linking to the order timeline. The frontend is intentionally a presentation seam until the tRPC/API client is wired to these server endpoints.

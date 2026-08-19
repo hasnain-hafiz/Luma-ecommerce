@@ -28,7 +28,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/health", "/actuator/health/**", "/api-docs/**", "/swagger-ui/**", "/api/v1/products/**", "/api/v1/auth/**", "/api/v1/payments/stripe/webhook").permitAll()
             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-            .requestMatchers("/api/v1/cart/**", "/api/v1/checkout/**").hasRole("CUSTOMER")
+            .requestMatchers("/api/v1/cart/**", "/api/v1/checkout/**", "/api/v1/orders/**").hasRole("CUSTOMER")
             .anyRequest().authenticated())
         .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
         .build();
