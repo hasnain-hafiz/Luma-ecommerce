@@ -54,3 +54,21 @@
 
 - [x] Add Spring Security role enforcement for `/api/v1/admin/products` using the exact ADMIN role.
 - [x] Add forbidden-access coverage for non-admin product writes and document the authentication integration seam.
+
+## Authentication and cart backend slice
+
+- [x] Add PostgreSQL users, refresh_tokens, carts, and cart_items schema with ownership and uniqueness constraints.
+- [x] Add authentication and cart DTO/domain contracts with exact CUSTOMER and ADMIN roles.
+- [x] Add password-hashing and JWT/refresh-token service boundaries without committing secrets.
+- [x] Add customer-owned cart read/add/update/remove contracts with server-side product lookup boundaries.
+- [x] Enforce authenticated customer access on cart routes and document ownership rules.
+- [x] Add auth/cart source-contract tests and validation checks.
+- [x] Document the authentication and cart onboarding flow.
+
+## Authentication and cart hardening
+
+- [x] Split Java public entities and repositories into filename-matching classes.
+- [x] Replace refresh-token hashCode storage with cryptographic hashing and implement revocation-aware token rotation.
+- [x] Enforce exact CUSTOMER role access on `/api/v1/cart/**` and retain ADMIN protection.
+- [x] Add backend security tests for unauthenticated, CUSTOMER, and ADMIN route access.
+- [x] Update auth/cart documentation with the hardened token and role flow.

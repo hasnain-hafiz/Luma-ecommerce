@@ -1,0 +1,8 @@
+package com.luma.commerce.cart;
+
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CartRepository extends JpaRepository<CartEntity, UUID> {
+  java.util.Optional<CartEntity> findByUserId(UUID userId);
+}
