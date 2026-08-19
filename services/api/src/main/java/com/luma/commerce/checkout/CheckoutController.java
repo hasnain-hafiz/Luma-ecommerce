@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/checkout")
 public class CheckoutController {
   private final CheckoutService checkout;
-  public CheckoutController(CheckoutService checkout) { this.checkout = checkout; }
+  private final InventoryReservationService reservations;
+  public CheckoutController(CheckoutService checkout, InventoryReservationService reservations) { this.checkout = checkout; this.reservations = reservations; }
+  @PostMapping("/drafts/{draftId}/cancel")
+  public void cancelDraft(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID draftId) { reservations.cancelDraft(UUID.fromString(jwt.getSubject()), draftId); }
+
   @PostMapping
   public CheckoutContracts.CheckoutResponse start(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CheckoutContracts.StartCheckoutRequest request) { return checkout.start(UUID.fromString(jwt.getSubject()), request); }
 }

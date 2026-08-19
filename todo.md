@@ -120,14 +120,14 @@
 - [x] Add orders, order_items, inventory_reservations, and payment_events schema with exact order statuses and immutable item snapshot columns.
 - [x] Add checkout and payment DTO/domain contracts with authoritative cents totals and webhook event idempotency.
 - [x] Implement transactional cart validation and inventory reservation with server-side product prices and stock checks.
-- [ ] Complete webhook-confirmed order creation from a dedicated checkout draft; current implementation persists a PENDING_PAYMENT order draft and promotes it to PAID after webhook confirmation.
+- [x] Complete webhook-confirmed order creation from a dedicated checkout draft; current implementation persists a dedicated draft and creates the durable order only after webhook confirmation.
 - [x] Add Stripe Checkout Session and signed webhook provider boundaries without committing secrets.
 - [x] Document checkout sequencing, status transitions, reservation release, and payment integration.
 - [x] Add checkout/inventory source-contract tests and validation checks.
 
 ## Checkout lifecycle hardening
 
-- [ ] Separate pre-payment checkout drafts from webhook-confirmed orders or make webhook confirmation create the durable order record.
+- [x] Separate pre-payment checkout drafts from webhook-confirmed orders or make webhook confirmation create the durable order record.
 - [x] Implement reservation commit on successful payment and release on expiry/cancellation.
 - [x] Add lifecycle tests for duplicate events, reservation commit, reservation release, inventory restoration, and cancellation transitions.
 
@@ -136,7 +136,7 @@
 - [x] Restore product inventory when releasing expired or cancelled reservations.
 - [x] Wire cancellation/expiry paths to release reservations and update order state.
 - [x] Add tests for reservation COMMITTED/RELEASED state and restored inventory.
-- [ ] Decide and implement dedicated checkout drafts or webhook-created durable orders.
+- [x] Decide and implement dedicated checkout drafts or webhook-created durable orders.
 
 ## Final checkout lifecycle tests
 
@@ -146,3 +146,20 @@
 ## Final webhook reservation test
 
 - [x] Add a webhook test asserting a successful payment transitions reservations to COMMITTED.
+
+## Checkout draft lifecycle completion
+
+- [x] Route expired draft reservations through draft expiry state instead of order lookup.
+- [x] Add explicit draft cancellation/release service flow.
+- [x] Add draft lifecycle tests for expiry, cancellation, release, and conversion ownership transfer.
+
+## Final draft cancellation and conversion coverage
+
+- [x] Add explicit CANCELLED draft state and a cancellation/release service path.
+- [x] Test draft cancellation releases reservations and marks the draft CANCELLED.
+- [x] Test webhook conversion transfers reservation ownership from draftId to orderId.
+
+## Final checkout delivery validation
+
+- [x] Expose draft cancellation through a reachable authenticated checkout API flow and document the endpoint.
+- [x] Add CI documentation/command coverage for executing Maven/Spring checkout tests when Java tooling is available.

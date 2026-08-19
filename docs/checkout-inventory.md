@@ -4,7 +4,7 @@ Checkout is intentionally server-authoritative. The customer submits a cart iden
 
 > The browser may display totals, but it never establishes the amount charged or the quantity reserved.
 
-The current slice persists a `PENDING_PAYMENT` order draft before payment so reservations and provider metadata have a durable identifier, then promotes that draft to `PAID` only after a verified webhook. A later hardening migration should split this into dedicated `checkout_drafts` and webhook-created `orders` tables if strict post-webhook order insertion is required by the deployment's audit policy.
+The current slice persists a dedicated `checkout_drafts` record before payment so reservations and provider metadata have a durable identifier. A verified webhook converts the open draft into the durable order, copies immutable item snapshots, transfers reservations to the order, commits them, and marks the order `PAID`.
 
 | Sequence | Backend responsibility | Durable result |
 |---|---|---|
@@ -23,4 +23,12 @@ The required order states are `PENDING_PAYMENT`, `PAID`, `PROCESSING`, `SHIPPED`
 
 ## Remaining operational work
 
-Add reservation release for expired or cancelled payments, clear cart items after successful payment, implement shipping/tax calculation, add order-history read APIs, and run the Java/PostgreSQL Testcontainers suite in CI. Never seed fake reviews or customer-generated content as order or catalog data.
+The remaining operational work is to clear cart items after successful payment, implement shipping/tax calculation, add order-history read APIs, and run the Java/PostgreSQL Testcontainers suite in CI. Expired or cancelled draft reservations now restore product inventory, mark reservations `RELEASED`, and transition the draft to `EXPIRED`; successful verified payment transfers reservations to the durable order and marks them `COMMITTED`. Never seed fake reviews or customer-generated content as order or catalog data.
+
+## Draft cancellation API
+
+Authenticated customers can cancel an open draft with `POST /api/v1/checkout/drafts/{draftId}/cancel`. The service verifies that the JWT subject owns the draft, restores reserved inventory, marks reservations `RELEASED`, and transitions the draft to `CANCELLED`. Expiry handling uses the same release behavior but transitions the draft to `EXPIRED`.
+
+## Java validation
+
+The sandbox does not include Maven/JDK execution. CI should run `cd services/api && ./mvnw -B test` (or `mvn -B test` when Maven is installed) and should provision PostgreSQL for integration tests. The repository's frontend checks remain `pnpm check && pnpm test`; source-contract checks complement, but do not replace, the Java test run.

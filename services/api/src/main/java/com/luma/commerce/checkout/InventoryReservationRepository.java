@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InventoryReservationRepository extends JpaRepository<InventoryReservationEntity, UUID> {
   List<InventoryReservationEntity> findByOrderId(UUID orderId);
+  List<InventoryReservationEntity> findByDraftId(UUID draftId);
   List<InventoryReservationEntity> findByStatusAndExpiresAtBefore(String status, Instant expiresAt);
 }

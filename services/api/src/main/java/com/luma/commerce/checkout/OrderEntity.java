@@ -29,6 +29,7 @@ public class OrderEntity {
   private Instant createdAt;
   private Instant updatedAt;
   protected OrderEntity() {}
+  public static OrderEntity fromDraft(CheckoutDraftEntity draft) { return pending(draft.getUserId(), draft.shippingAddress(), new CheckoutContracts.AuthoritativeTotal(draft.getSubtotalCents(), draft.getShippingCents(), draft.getTaxCents(), draft.getTotalCents(), draft.getCurrency())); }
   public static OrderEntity pending(UUID userId, CheckoutContracts.ShippingAddress shipping, CheckoutContracts.AuthoritativeTotal total) { var order = new OrderEntity(); order.id = UUID.randomUUID(); order.userId = userId; order.status = CheckoutContracts.OrderStatus.PENDING_PAYMENT; order.currency = total.currency(); order.subtotalCents = total.subtotalCents(); order.shippingCents = total.shippingCents(); order.taxCents = total.taxCents(); order.totalCents = total.totalCents(); order.shippingName = shipping.name(); order.shippingLine1 = shipping.line1(); order.shippingLine2 = shipping.line2(); order.shippingCity = shipping.city(); order.shippingRegion = shipping.region(); order.shippingPostalCode = shipping.postalCode(); order.shippingCountry = shipping.country(); order.createdAt = Instant.now(); order.updatedAt = Instant.now(); return order; }
   public UUID getId() { return id; }
   public UUID getUserId() { return userId; }
