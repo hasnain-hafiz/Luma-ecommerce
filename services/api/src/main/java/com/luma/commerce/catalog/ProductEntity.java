@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class ProductEntity {
   @Column(name = "rating_count", nullable = false) private int ratingCount;
   @Column(name = "inventory_quantity", nullable = false) private int inventoryQuantity;
   @Column(nullable = false) private boolean active;
+  @Version private long version;
   @Column(name = "created_at", nullable = false) private Instant createdAt;
   @Column(name = "updated_at", nullable = false) private Instant updatedAt;
 
@@ -58,5 +60,7 @@ public class ProductEntity {
   public double getRatingAverage() { return ratingAverage; }
   public int getRatingCount() { return ratingCount; }
   public int getInventoryQuantity() { return inventoryQuantity; }
+  public void reserve(int quantity) { if (quantity <= 0 || inventoryQuantity < quantity) throw new IllegalArgumentException("Insufficient inventory"); inventoryQuantity -= quantity; }
+  public void release(int quantity) { inventoryQuantity += quantity; }
   public boolean isActive() { return active; }
 }

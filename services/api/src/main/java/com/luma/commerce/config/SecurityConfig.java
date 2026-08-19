@@ -26,9 +26,9 @@ public class SecurityConfig {
     return http.csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/health", "/actuator/health/**", "/api-docs/**", "/swagger-ui/**", "/api/v1/products/**", "/api/v1/auth/**").permitAll()
+            .requestMatchers("/api/v1/health", "/actuator/health/**", "/api-docs/**", "/swagger-ui/**", "/api/v1/products/**", "/api/v1/auth/**", "/api/v1/payments/stripe/webhook").permitAll()
             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-            .requestMatchers("/api/v1/cart/**").hasRole("CUSTOMER")
+            .requestMatchers("/api/v1/cart/**", "/api/v1/checkout/**").hasRole("CUSTOMER")
             .anyRequest().authenticated())
         .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
         .build();

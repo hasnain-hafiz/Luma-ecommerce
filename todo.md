@@ -114,3 +114,35 @@
 ## Verification request assertion hardening
 
 - [x] Assert the privacy-safe accepted response body and verify the email-verification service handoff in the MVC test.
+
+## Checkout and inventory backend slice
+
+- [x] Add orders, order_items, inventory_reservations, and payment_events schema with exact order statuses and immutable item snapshot columns.
+- [x] Add checkout and payment DTO/domain contracts with authoritative cents totals and webhook event idempotency.
+- [x] Implement transactional cart validation and inventory reservation with server-side product prices and stock checks.
+- [ ] Complete webhook-confirmed order creation from a dedicated checkout draft; current implementation persists a PENDING_PAYMENT order draft and promotes it to PAID after webhook confirmation.
+- [x] Add Stripe Checkout Session and signed webhook provider boundaries without committing secrets.
+- [x] Document checkout sequencing, status transitions, reservation release, and payment integration.
+- [x] Add checkout/inventory source-contract tests and validation checks.
+
+## Checkout lifecycle hardening
+
+- [ ] Separate pre-payment checkout drafts from webhook-confirmed orders or make webhook confirmation create the durable order record.
+- [x] Implement reservation commit on successful payment and release on expiry/cancellation.
+- [x] Add lifecycle tests for duplicate events, reservation commit, reservation release, inventory restoration, and cancellation transitions.
+
+## Checkout lifecycle completion gaps
+
+- [x] Restore product inventory when releasing expired or cancelled reservations.
+- [x] Wire cancellation/expiry paths to release reservations and update order state.
+- [x] Add tests for reservation COMMITTED/RELEASED state and restored inventory.
+- [ ] Decide and implement dedicated checkout drafts or webhook-created durable orders.
+
+## Final checkout lifecycle tests
+
+- [x] Transition expired pending orders to CANCELLED when releasing expired reservations.
+- [x] Add service tests for RELEASED reservation state, COMMITTED webhook state, and releaseExpired/releaseForOrder behavior.
+
+## Final webhook reservation test
+
+- [x] Add a webhook test asserting a successful payment transitions reservations to COMMITTED.
