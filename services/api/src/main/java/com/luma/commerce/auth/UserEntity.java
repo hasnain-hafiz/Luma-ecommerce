@@ -16,6 +16,7 @@ public class UserEntity {
   private String passwordHash;
   @Enumerated(EnumType.STRING) private AuthContracts.Role role;
   private boolean active;
+  private boolean emailVerified;
   private Instant createdAt;
   private Instant updatedAt;
   protected UserEntity() {}
@@ -25,4 +26,7 @@ public class UserEntity {
   public String getPasswordHash() { return passwordHash; }
   public AuthContracts.Role getRole() { return role; }
   public boolean isActive() { return active; }
+  public boolean isEmailVerified() { return emailVerified; }
+  public void verifyEmail() { emailVerified = true; }
+  public void changePassword(String passwordHash) { this.passwordHash = passwordHash; }
 }

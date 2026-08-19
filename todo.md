@@ -72,3 +72,45 @@
 - [x] Enforce exact CUSTOMER role access on `/api/v1/cart/**` and retain ADMIN protection.
 - [x] Add backend security tests for unauthenticated, CUSTOMER, and ADMIN route access.
 - [x] Update auth/cart documentation with the hardened token and role flow.
+
+## Authentication enhancements
+
+- [x] Add password-reset and email-verification token tables with hashed tokens, expiry, consumption, and user ownership constraints.
+- [x] Add password-reset and email-verification request/response contracts with privacy-safe responses.
+- [x] Implement provider-neutral token generation, hashing, expiry, and single-use consumption services.
+- [x] Implement password-reset request/confirm and email-verification request/confirm endpoints.
+- [x] Add server-side rate limiting for registration, login, refresh, password reset, and verification requests.
+- [x] Document email delivery integration, token lifecycle, rate-limit policy, and operational configuration.
+- [x] Add authentication-enhancement source-contract tests and validation checks.
+
+## Authentication enhancement hardening
+
+- [x] Revoke all active refresh tokens when a password reset is confirmed.
+- [x] Add backend tests for password-reset and email-verification single-use, expiry, privacy, and confirmation behavior.
+- [x] Add backend tests for registration, login, refresh, recovery, verification, and rate-limit rejection behavior.
+
+## Authentication integration-test coverage
+
+- [x] Add Spring service/controller tests for reset and verification success, expiry rejection, consumed-token rejection, and privacy-safe request behavior.
+- [x] Add Spring tests for registration, login, unverified-user rejection, refresh rotation/revocation, and rate-limit 429 behavior.
+
+## Authentication endpoint test completion
+
+- [x] Add reset-confirm success, expiry rejection, and consumed-token rejection tests.
+- [x] Add email-verification request/confirm success, expiry rejection, and consumed-token rejection tests.
+- [x] Add registration success/duplicate-email, login success/unverified rejection, and refresh rotation/revocation tests.
+- [x] Add 429 tests for registration, refresh, password-reset, and email-verification request endpoints.
+
+## Final authentication test gaps
+
+- [x] Add password-reset success and consumed-token rejection tests.
+- [x] Add email-verification request success and expired-token rejection tests.
+- [x] Add registration success and successful-login tests.
+
+## Final verification request test
+
+- [x] Add a test proving a normal email-verification request returns the privacy-safe accepted response and invokes the delivery flow.
+
+## Verification request assertion hardening
+
+- [x] Assert the privacy-safe accepted response body and verify the email-verification service handoff in the MVC test.
