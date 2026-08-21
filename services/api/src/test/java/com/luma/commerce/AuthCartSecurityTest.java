@@ -1,6 +1,9 @@
 package com.luma.commerce;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,13 +30,13 @@ class AuthCartSecurityTest {
 
   @Test
   void customerCanReachCartRoute() throws Exception {
-    mockMvc.perform(get("/api/v1/cart").with(jwt().jwt(token -> token.claim("roles", java.util.List.of("ROLE_CUSTOMER")))))
+    mockMvc.perform(get("/api/v1/cart").with(jwt().jwt(token -> token.subject(UUID.randomUUID().toString())).authorities(new SimpleGrantedAuthority("ROLE_CUSTOMER"))))
         .andExpect(status().isOk());
   }
 
   @Test
   void adminCannotUseCustomerCartRoute() throws Exception {
-    mockMvc.perform(get("/api/v1/cart").with(jwt().jwt(token -> token.claim("roles", java.util.List.of("ROLE_ADMIN")))))
+    mockMvc.perform(get("/api/v1/cart").with(jwt().jwt(token -> token.subject(UUID.randomUUID().toString())).authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
         .andExpect(status().isForbidden());
   }
 }

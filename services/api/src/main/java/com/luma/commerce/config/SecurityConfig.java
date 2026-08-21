@@ -45,12 +45,12 @@ public class SecurityConfig {
   }
 
   @Bean
-  JwtEncoder jwtEncoder(@Value("${JWT_SECRET:replace-with-a-long-random-secret}") String secret) {
+  JwtEncoder jwtEncoder(@Value("${LUMA_API_JWT_SECRET:${JWT_SECRET:replace-with-a-long-random-secret}}") String secret) {
     return new NimbusJwtEncoder(new ImmutableSecret<>(secret.getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
-  JwtDecoder jwtDecoder(@Value("${JWT_SECRET:replace-with-a-long-random-secret}") String secret) {
+  JwtDecoder jwtDecoder(@Value("${LUMA_API_JWT_SECRET:${JWT_SECRET:replace-with-a-long-random-secret}}") String secret) {
     var key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     return NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
   }

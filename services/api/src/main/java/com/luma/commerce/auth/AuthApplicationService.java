@@ -2,6 +2,7 @@ package com.luma.commerce.auth;
 
 import java.time.Instant;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -52,7 +53,7 @@ public class AuthApplicationService {
   private AuthContracts.TokenPair issue(UserEntity user) {
     var accessExpiry = tokens.accessExpiry();
     var claims = JwtClaimsSet.builder().subject(user.getId().toString()).claim("email", user.getEmail()).claim("roles", java.util.List.of("ROLE_" + user.getRole().name())).issuedAt(Instant.now()).expiresAt(accessExpiry).build();
-    var access = jwtEncoder.encode(JwtEncoderParameters.from(MacAlgorithm.HS256, claims)).getTokenValue();
+    var access = jwtEncoder.encode(JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
     var refresh = tokens.newOpaqueRefreshToken(); var refreshExpiry = tokens.refreshExpiry();
     refreshTokens.save(RefreshTokenEntity.create(user.getId(), tokens.hashRefreshToken(refresh), refreshExpiry));
     return new AuthContracts.TokenPair(access, refresh, accessExpiry, refreshExpiry, view(user));

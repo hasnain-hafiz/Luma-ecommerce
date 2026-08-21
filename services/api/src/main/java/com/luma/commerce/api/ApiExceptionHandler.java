@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -23,6 +24,12 @@ public class ApiExceptionHandler {
   @ExceptionHandler(NoSuchElementException.class)
   ResponseEntity<ApiContracts.ApiError> notFound(NoSuchElementException ex, HttpServletRequest request) {
     return response(HttpStatus.NOT_FOUND, "NOT_FOUND", "The requested resource was not found", request, List.of());
+  }
+
+  @ExceptionHandler(ResponseStatusException.class)
+  ResponseEntity<ApiContracts.ApiError> status(ResponseStatusException ex, HttpServletRequest request) {
+    var status = HttpStatus.valueOf(ex.getStatusCode().value());
+    return response(status, status == HttpStatus.TOO_MANY_REQUESTS ? "RATE_LIMITED" : "REQUEST_REJECTED", ex.getReason() == null ? "The request was rejected" : ex.getReason(), request, List.of());
   }
 
   @ExceptionHandler(Exception.class)

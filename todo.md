@@ -224,3 +224,30 @@
 - [x] Connect the order client to an actually issued and refreshed JWT session token or add a documented authenticated proxy bridge.
 - [x] Add and execute frontend tests covering order-history and confirmation auth-required states plus retry transitions.
 - [x] Add deterministic failure-mode controls for preview verification and capture the resulting 401/403 and retry-error screenshots.
+
+## Production integration completion
+
+- [x] Audit live frontend-to-Java API integration boundaries for auth, catalog, cart, checkout, Stripe, admin, and AI services.
+- [x] Implement remaining integration code that can be completed without user-provided secrets.
+- [x] Add or document mandatory credential configuration and safe setup instructions for user-owned services.
+- [x] Run available frontend and source validation, then document the remaining user actions and external-service verification steps.
+
+## Remaining live integrations
+
+- [ ] Wire storefront catalog and cart flows to live Java `/api/v1` endpoints instead of local/demo data.
+- [ ] Replace the Java `NoopPaymentGateway` boundary with a real Stripe adapter and signed webhook verification.
+- [ ] Connect admin surfaces to authoritative backend APIs for products, inventory, orders, customers, categories, and reviews.
+- [ ] Connect the AI assistant to authoritative backend catalog tools while preserving the exact tool names.
+
+## Razorpay payment migration
+
+- [ ] Replace Stripe-specific payment configuration, naming, and documentation with Razorpay equivalents.
+- [ ] Implement Razorpay order creation and signature/webhook verification while preserving idempotent payment events and server-authoritative totals.
+- [ ] Update checkout frontend and backend tests for Razorpay payment handoff and webhook confirmation.
+- [ ] Document required Razorpay credentials, dashboard webhook setup, test flow, and remaining user actions.
+
+## CI failure fixes
+
+- [x] Remove the duplicate pnpm version declaration between GitHub Actions and package metadata.
+- [x] Fix the AuthApplicationService JWT header construction so Maven Java 21 compilation succeeds.
+- [x] Run frontend checks and the Java Maven verification path, then review remaining CI failures.

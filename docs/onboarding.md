@@ -37,3 +37,13 @@ The minimum roles are `CUSTOMER` and `ADMIN`. The order state machine uses exact
 ## Contribution workflow
 
 Start by adding a concrete unchecked item to `todo.md`. Keep a feature in one vertical slice: contract, DTO, service, persistence, UI wiring, and tests. Run type checks and tests before requesting review. If a change affects persistence, write a new Flyway migration rather than editing an applied migration. If a change affects payment or authorization, add a test for the failure path as well as the happy path.
+
+## Production integration checklist
+
+The Java API is configured to accept `LUMA_API_DATABASE_URL`, `LUMA_API_DB_USERNAME`, `LUMA_API_DB_PASSWORD`, and `LUMA_API_JWT_SECRET`. The supplied Neon database values are stored as project secrets; do not place them in source files or commit them. Deploy the API with these same environment variables and Flyway migrations enabled. Confirm that `/actuator/health` and `/api/v1/health` respond successfully before connecting the storefront.
+
+The frontend order client expects `VITE_ORDER_API_BASE_URL` to point to the deployed Java API origin. It forwards the existing authenticated preview session bridge as a bearer token when available and also includes cookies for a same-origin proxy deployment. The Java authentication flow must issue and refresh JWTs containing the `roles` claim with `CUSTOMER` or `ADMIN`, and the frontend session bridge must remove the token on logout or refresh-token revocation.
+
+For payments, claim the Stripe test sandbox from the project’s Stripe integration card, confirm the test keys under Settings → Payment, and configure the Java API webhook endpoint `/api/v1/payments/stripe/webhook` in Stripe Dashboard → Developers → Webhooks. Use the test card `4242 4242 4242 4242` only after the checkout session endpoint and webhook URL are reachable. Live payments require completing Stripe verification and replacing test configuration through Settings → Payment.
+
+No separate AI provider credential is currently required for the existing controlled assistant because the project has built-in Manus AI integration variables. A production live-catalog assistant still needs the frontend or backend tool adapters connected to the authoritative catalog API.
