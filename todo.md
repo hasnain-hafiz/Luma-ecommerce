@@ -256,3 +256,8 @@
 
 - [x] Make `server/api-config.test.ts` pass when GitHub Actions does not inject deployment secrets, while still validating configured values when present without exposing them.
 - [x] Rerun `pnpm test` and review the CI workflow after the configuration-test fix.
+
+## Java API container deployment
+
+- [x] Add a production multi-stage Dockerfile for the Java 21 Spring Boot API with non-root runtime and dynamic port support.
+- [x] Validate the Dockerfile build/run contract and document Railway/Render deployment usage.

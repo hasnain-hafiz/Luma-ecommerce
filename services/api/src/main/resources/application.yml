@@ -26,6 +26,7 @@ info:
     name: Luma Commerce API
     version: ${APP_VERSION:0.1.0-SNAPSHOT}
 server:
+  port: ${PORT:8080}
   error:
     include-message: never
     include-stacktrace: never
