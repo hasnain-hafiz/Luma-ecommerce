@@ -12,7 +12,7 @@ public class PaymentWebhookService {
   @Transactional
   public void handle(String signature, String rawPayload) {
     var webhook = payments.verifyWebhook(signature, rawPayload); if (events.findByProviderEventId(webhook.providerEventId()).isPresent()) return; var event = events.save(PaymentEventEntity.received(webhook));
-    if (webhook.orderId() != null && (webhook.eventType().equals("checkout.session.completed") || webhook.eventType().equals("payment_intent.succeeded"))) {
+    if (webhook.orderId() != null && (webhook.eventType().equals("payment.captured") || webhook.eventType().equals("order.paid") || webhook.eventType().equals("payment.authorized"))) {
       var existing = orders.findById(webhook.orderId());
       if (existing.isPresent()) { markPaid(existing.get()); }
       else { convertDraft(webhook.orderId()); }

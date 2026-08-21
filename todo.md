@@ -241,13 +241,18 @@
 
 ## Razorpay payment migration
 
-- [ ] Replace Stripe-specific payment configuration, naming, and documentation with Razorpay equivalents.
-- [ ] Implement Razorpay order creation and signature/webhook verification while preserving idempotent payment events and server-authoritative totals.
-- [ ] Update checkout frontend and backend tests for Razorpay payment handoff and webhook confirmation.
-- [ ] Document required Razorpay credentials, dashboard webhook setup, test flow, and remaining user actions.
+- [x] Replace Stripe-specific payment configuration, naming, and documentation with Razorpay equivalents.
+- [x] Implement Razorpay order creation and signature/webhook verification while preserving idempotent payment events and server-authoritative totals.
+- [x] Update checkout frontend and backend tests for Razorpay payment handoff and webhook confirmation.
+- [x] Document required Razorpay credentials, dashboard webhook setup, test flow, and remaining user actions.
 
 ## CI failure fixes
 
 - [x] Remove the duplicate pnpm version declaration between GitHub Actions and package metadata.
 - [x] Fix the AuthApplicationService JWT header construction so Maven Java 21 compilation succeeds.
 - [x] Run frontend checks and the Java Maven verification path, then review remaining CI failures.
+
+## CI configuration test fix
+
+- [x] Make `server/api-config.test.ts` pass when GitHub Actions does not inject deployment secrets, while still validating configured values when present without exposing them.
+- [x] Rerun `pnpm test` and review the CI workflow after the configuration-test fix.

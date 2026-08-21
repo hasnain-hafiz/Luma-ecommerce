@@ -17,9 +17,9 @@ The current slice persists a dedicated `checkout_drafts` record before payment s
 
 The required order states are `PENDING_PAYMENT`, `PAID`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`, and `REFUNDED`. Order items copy product name, SKU, unit price, quantity, line total, and image URL at purchase time, so later catalog edits cannot rewrite customer history.
 
-## Stripe boundary
+## Razorpay boundary
 
-`PaymentGateway` is the provider-neutral seam. The current `NoopPaymentGateway` returns a clearly non-production placeholder session and rejects webhook verification. A production adapter must use Stripe Checkout Sessions, verify `Stripe-Signature` against the raw request body, store the provider event ID uniquely, and treat duplicate delivery as a no-op. The webhook—not a browser callback—creates the paid state.
+`PaymentGateway` is the provider-neutral seam. `RazorpayPaymentGateway` creates a Razorpay Order using the server-authoritative amount in INR paise, stores the checkout handoff identifier in the payment session, verifies the `X-Razorpay-Signature` HMAC against the raw webhook body, extracts the draft identifier from provider notes or receipt metadata, and returns a stable provider event ID for idempotency. The webhook—not a browser callback—creates the paid state. The browser must never receive `RAZORPAY_KEY_SECRET` or `RAZORPAY_WEBHOOK_SECRET`.
 
 ## Remaining operational work
 
@@ -31,10 +31,10 @@ Authenticated customers can cancel an open draft with `POST /api/v1/checkout/dra
 
 ## Java validation
 
-The sandbox does not include Maven/JDK execution. CI should run `cd services/api && ./mvnw -B test` (or `mvn -B test` when Maven is installed) and should provision PostgreSQL for integration tests. The repository's frontend checks remain `pnpm check && pnpm test`; source-contract checks complement, but do not replace, the Java test run.
+The sandbox now has Maven and JDK 21 available for local verification. CI should run `cd services/api && ./mvnw -B test` (or `mvn -B test` when Maven is installed) and should provision PostgreSQL for integration tests. The repository's frontend checks remain `pnpm check && pnpm test`; source-contract checks complement, but do not replace, the Java test run.
 
 ## Order history and confirmation
 
 `GET /api/v1/orders` returns only summaries owned by the authenticated JWT subject. `GET /api/v1/orders/{orderId}` repeats the ownership predicate and maps the immutable `order_items` snapshots rather than current catalog records. After a verified payment webhook converts or marks an order `PAID`, the same transaction clears only that customer's cart; duplicate provider events exit before any cart mutation.
 
-The storefront exposes `/account/orders`, `/order/{id}`, and `/checkout/confirmation`. The confirmation view presents the order number, paid amount, shipping summary, immutable item detail, and current exact status, while linking to the order timeline. The frontend is intentionally a presentation seam until the tRPC/API client is wired to these server endpoints.
+The storefront exposes `/account/orders`, `/order/{id}`, and `/checkout/confirmation`. The confirmation view presents the order number, paid amount, shipping summary, immutable item detail, and current exact status, while linking to the order timeline. The checkout handoff is now named Razorpay and uses INR paise on the Java API; the remaining frontend work is to load the Razorpay Checkout script and pass the returned order identifier into its client-side options.

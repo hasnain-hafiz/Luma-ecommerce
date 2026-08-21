@@ -8,7 +8,7 @@ The backend API is versioned under `/api/v1`. This document is the implementatio
 | Catalog | `GET /products`, `GET /products/{slug}`, `GET /categories` | Public reads; admin writes |
 | Cart | `GET /cart`, `POST /cart/items`, `PATCH /cart/items/{id}`, `DELETE /cart/items/{id}` | Customer ownership and server recalculation |
 | Orders | `POST /orders/checkout`, `GET /orders`, `GET /orders/{id}` | Customer ownership; webhook finalization |
-| Payments | `POST /payments/stripe/session`, `POST /payments/stripe/webhook` | Server secret and signature verification |
+| Payments | `POST /payments/razorpay/session`, `POST /payments/razorpay/webhook` | Server secret and signature verification |
 | Reviews | `POST /products/{id}/reviews`, `GET /products/{id}/reviews` | Verified purchase for writes; moderation for publication |
 | Admin | `GET /admin/analytics`, `POST /admin/products`, `PATCH /admin/orders/{id}` | `ADMIN` role enforced in backend |
 | AI | `POST /ai/assist` | Rate limited; controlled tool allow-list only |
@@ -19,7 +19,7 @@ The only catalog tools permitted to the AI layer are `searchProducts`, `getProdu
 
 ## Order states
 
-The order state machine uses the exact labels `PENDING_PAYMENT`, `PAID`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`, and `REFUNDED`. The service layer must reject invalid transitions. Stripe webhook handling must be idempotent and must be the authoritative path from pending payment to paid order.
+The order state machine uses the exact labels `PENDING_PAYMENT`, `PAID`, `PROCESSING`, `SHIPPED`, `DELIVERED`, `CANCELLED`, and `REFUNDED`. The service layer must reject invalid transitions. Razorpay webhook handling must be idempotent and must be the authoritative path from pending payment to paid order.
 
 ## Error shape
 

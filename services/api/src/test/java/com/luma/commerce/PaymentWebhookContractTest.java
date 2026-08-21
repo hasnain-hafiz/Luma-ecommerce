@@ -21,7 +21,7 @@ class PaymentWebhookContractTest {
   @Test
   void duplicateProviderEventIsIgnored() {
     var gateway = mock(PaymentGateway.class); var events = mock(PaymentEventRepository.class); var orders = mock(OrderRepository.class); var reservations = mock(com.luma.commerce.checkout.InventoryReservationRepository.class);
-    when(gateway.verifyWebhook("sig", "payload")).thenReturn(new CheckoutContracts.PaymentWebhook("stripe", "evt-1", "checkout.session.completed", UUID.randomUUID(), "hash"));
+    when(gateway.verifyWebhook("sig", "payload")).thenReturn(new CheckoutContracts.PaymentWebhook("razorpay", "evt-1", "payment.captured", UUID.randomUUID(), "hash"));
     when(events.findByProviderEventId("evt-1")).thenReturn(Optional.of(mock(com.luma.commerce.checkout.PaymentEventEntity.class)));
     new PaymentWebhookService(gateway, events, orders, mock(com.luma.commerce.checkout.OrderItemRepository.class), mock(com.luma.commerce.checkout.CheckoutDraftRepository.class), mock(com.luma.commerce.checkout.CheckoutDraftItemRepository.class), reservations, mock(com.luma.commerce.cart.CartService.class)).handle("sig", "payload");
     verify(orders, never()).save(any());
@@ -29,8 +29,8 @@ class PaymentWebhookContractTest {
 
   @Test
   void successfulPaymentMovesPendingOrderToPaid() {
-    var gateway = mock(PaymentGateway.class); var events = mock(PaymentEventRepository.class); var orders = mock(OrderRepository.class); var reservations = mock(com.luma.commerce.checkout.InventoryReservationRepository.class); var order = OrderEntity.pending(UUID.randomUUID(), new CheckoutContracts.ShippingAddress("Name", "Line", null, "City", "Region", "00000", "US"), new CheckoutContracts.AuthoritativeTotal(100, 0, 0, 100, "USD"));
-    when(gateway.verifyWebhook("sig", "payload")).thenReturn(new CheckoutContracts.PaymentWebhook("stripe", "evt-2", "checkout.session.completed", order.getId(), "hash"));
+    var gateway = mock(PaymentGateway.class); var events = mock(PaymentEventRepository.class); var orders = mock(OrderRepository.class); var reservations = mock(com.luma.commerce.checkout.InventoryReservationRepository.class); var order = OrderEntity.pending(UUID.randomUUID(), new CheckoutContracts.ShippingAddress("Name", "Line", null, "City", "Region", "00000", "US"), new CheckoutContracts.AuthoritativeTotal(100, 0, 0, 100, "INR"));
+    when(gateway.verifyWebhook("sig", "payload")).thenReturn(new CheckoutContracts.PaymentWebhook("razorpay", "evt-2", "payment.captured", order.getId(), "hash"));
     var reservation = com.luma.commerce.checkout.InventoryReservationEntity.reserve(order.getId(), UUID.randomUUID(), 1, java.time.Instant.now().plusSeconds(60));
     when(events.findByProviderEventId("evt-2")).thenReturn(Optional.empty()); when(orders.findById(order.getId())).thenReturn(Optional.of(order)); when(reservations.findByOrderId(order.getId())).thenReturn(java.util.List.of(reservation)); when(events.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     new PaymentWebhookService(gateway, events, orders, mock(com.luma.commerce.checkout.OrderItemRepository.class), mock(com.luma.commerce.checkout.CheckoutDraftRepository.class), mock(com.luma.commerce.checkout.CheckoutDraftItemRepository.class), reservations, mock(com.luma.commerce.cart.CartService.class)).handle("sig", "payload");

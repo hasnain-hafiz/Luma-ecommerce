@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentWebhookController {
   private final PaymentWebhookService webhooks;
   public PaymentWebhookController(PaymentWebhookService webhooks) { this.webhooks = webhooks; }
-  @PostMapping("/stripe/webhook")
-  public ResponseEntity<Void> stripeWebhook(@RequestHeader("Stripe-Signature") String signature, @RequestBody String rawPayload) {
+  @PostMapping("/razorpay/webhook")
+  public ResponseEntity<Void> razorpayWebhook(@RequestHeader("X-Razorpay-Signature") String signature, @RequestBody String rawPayload) {
     webhooks.handle(signature, rawPayload); return ResponseEntity.ok().build();
   }
 }
