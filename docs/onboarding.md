@@ -28,7 +28,7 @@ The API defaults to `jdbc:postgresql://localhost:5432/luma`, user `luma`, and a 
 
 A browser interaction starts in a route component. Catalog and cart actions currently use typed local data so the storefront remains usable without external credentials. The production path should replace those local functions with calls to `/api/v1` procedures. The API controller should validate the request, pass a DTO to a domain service, use a repository for persistence, and return a response DTO. Controllers must not expose JPA entities directly.
 
-Checkout is intentionally backend-authoritative: the API recalculates prices, discounts, shipping, tax, and inventory, creates a Stripe session, and waits for a verified webhook before finalizing the order. The browser must never be allowed to mark an order paid.
+Checkout is intentionally backend-authoritative: the API recalculates prices, discounts, shipping, tax, and inventory, creates a Razorpay order, and waits for a verified webhook before finalizing the order. The browser must never be allowed to mark an order paid.
 
 ## Domain vocabulary
 
@@ -44,6 +44,19 @@ The Java API is configured to accept `LUMA_API_DATABASE_URL`, `LUMA_API_DB_USERN
 
 The frontend order client expects `VITE_ORDER_API_BASE_URL` to point to the deployed Java API origin. It forwards the existing authenticated preview session bridge as a bearer token when available and also includes cookies for a same-origin proxy deployment. The Java authentication flow must issue and refresh JWTs containing the `roles` claim with `CUSTOMER` or `ADMIN`, and the frontend session bridge must remove the token on logout or refresh-token revocation.
 
-For payments, claim the Stripe test sandbox from the project’s Stripe integration card, confirm the test keys under Settings → Payment, and configure the Java API webhook endpoint `/api/v1/payments/stripe/webhook` in Stripe Dashboard → Developers → Webhooks. Use the test card `4242 4242 4242 4242` only after the checkout session endpoint and webhook URL are reachable. Live payments require completing Stripe verification and replacing test configuration through Settings → Payment.
+For payments, enter the Razorpay Test Mode `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET` through the secure project settings. Configure the Java API webhook endpoint `/api/v1/payments/razorpay/webhook` in the Razorpay Dashboard → Account & Settings → Webhooks. Select the `payment.captured`, `order.paid`, and `payment.authorized` events. Use Razorpay’s documented test payment methods only after the order-creation endpoint and webhook URL are reachable. Live payments require completing Razorpay KYC and replacing test configuration through the secure project settings.
 
 No separate AI provider credential is currently required for the existing controlled assistant because the project has built-in Manus AI integration variables. A production live-catalog assistant still needs the frontend or backend tool adapters connected to the authoritative catalog API.
+
+## Deployment schema repair: checkout currency
+
+If the Java API fails at startup with `checkout_drafts.currency` found as PostgreSQL `bpchar`/`CHAR` but Hibernate expects `VARCHAR`, deploy the version containing `services/api/src/main/resources/db/migration/V6__currency_columns_varchar.sql`. Flyway will apply the forward migration on startup before Hibernate validation. The migration converts `checkout_drafts.currency` and `orders.currency` to `VARCHAR(3)` and trims PostgreSQL fixed-width padding.
+
+For an existing Neon database, the equivalent SQL is:
+
+```sql
+ALTER TABLE checkout_drafts ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+ALTER TABLE orders ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+```
+
+Run it in the Neon SQL Editor only if the deployed artifact does not yet include V6, then redeploy the Java API. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.

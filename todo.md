@@ -261,3 +261,8 @@
 
 - [x] Add a production multi-stage Dockerfile for the Java 21 Spring Boot API with non-root runtime and dynamic port support.
 - [x] Validate the Dockerfile build/run contract and document Railway/Render deployment usage.
+
+## Deployment schema mismatch fix
+
+- [x] Align `checkout_drafts.currency` PostgreSQL type with the Java entity and add a forward-safe migration for existing Neon databases.
+- [x] Run Java verification and provide the exact Neon migration/deployment retry steps.
