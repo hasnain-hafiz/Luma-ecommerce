@@ -235,7 +235,7 @@
 ## Remaining live integrations
 
 - [ ] Wire storefront catalog and cart flows to live Java `/api/v1` endpoints instead of local/demo data.
-- [ ] Replace the Java `NoopPaymentGateway` boundary with a real Stripe adapter and signed webhook verification.
+- [x] Replace the Java `NoopPaymentGateway` boundary with a real Razorpay adapter and signed webhook verification.
 - [ ] Connect admin surfaces to authoritative backend APIs for products, inventory, orders, customers, categories, and reviews.
 - [ ] Connect the AI assistant to authoritative backend catalog tools while preserving the exact tool names.
 
