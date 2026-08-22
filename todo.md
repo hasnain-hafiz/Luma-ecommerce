@@ -316,3 +316,5 @@
 ## Vercel frontend deployment
 
 - [x] Prepare the frontend for Vercel deployment, verify the connected Vercel project state, validate the production build, and document required environment variables and publish steps.
+
+- [x] Fix CI-safe Razorpay webhook-secret validation when the optional secret is absent from the test environment, then rerun the full Vitest suite.
