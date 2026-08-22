@@ -295,3 +295,7 @@
 
 - [x] Fix `InventoryReservationService` construction so Spring can instantiate the checkout dependency in production.
 - [x] Run Java verification and provide the next Render redeploy action after the wiring fix.
+
+## Render deployment verification
+
+- [x] Verify the deployed Render API health and Actuator endpoints and configure the storefront API base URL to `https://luma-ecommerce.onrender.com`.
