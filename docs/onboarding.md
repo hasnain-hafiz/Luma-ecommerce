@@ -79,6 +79,7 @@ ALTER TABLE checkout_drafts ALTER COLUMN shipping_country TYPE VARCHAR(2) USING 
 ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
 ALTER TABLE password_reset_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
 ALTER TABLE email_verification_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
+ALTER TABLE payment_events ALTER COLUMN payload_hash TYPE VARCHAR(64) USING BTRIM(payload_hash);
 ```
 
-Run the SQL in Neon only if Flyway has not applied V6, V7, or V8, then redeploy. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.
+Run the SQL in Neon only if Flyway has not applied V6, V7, V8, or V9, then redeploy. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.

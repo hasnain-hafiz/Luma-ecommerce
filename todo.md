@@ -280,3 +280,8 @@
 
 - [x] Convert authentication token hash columns defined as fixed-width CHAR to VARCHAR-compatible types for Hibernate validation.
 - [x] Run Java verification and provide the next Render redeploy action after the authentication migration update.
+
+## Render payment-event schema mismatch follow-up
+
+- [x] Convert `payment_events.payload_hash` from fixed-width CHAR to VARCHAR-compatible type for Hibernate validation.
+- [x] Run Java verification and provide the next Render redeploy action after the payment-event migration update.
