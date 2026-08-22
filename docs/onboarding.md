@@ -59,4 +59,13 @@ ALTER TABLE checkout_drafts ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(cu
 ALTER TABLE orders ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
 ```
 
-Run it in the Neon SQL Editor only if the deployed artifact does not yet include V6, then redeploy the Java API. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.
+Run the following in the Neon SQL Editor only if the deployed artifact does not yet include V6 or V7, then redeploy the Java API:
+
+```sql
+ALTER TABLE checkout_drafts ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+ALTER TABLE orders ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+ALTER TABLE checkout_drafts ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
+ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
+```
+
+Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.

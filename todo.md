@@ -271,3 +271,7 @@
 
 - [x] Convert all checkout draft and order snapshot fixed-width CHAR columns that map to Java String fields, including `shipping_country`.
 - [x] Run Java tests and provide Render redeploy guidance after the migration update.
+
+## Render V7 documentation correction
+
+- [x] Add the V7 `shipping_country` repair SQL to onboarding so manual Neon recovery covers the latest Render error.
