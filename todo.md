@@ -285,3 +285,8 @@
 
 - [x] Convert `payment_events.payload_hash` from fixed-width CHAR to VARCHAR-compatible type for Hibernate validation.
 - [x] Run Java verification and provide the next Render redeploy action after the payment-event migration update.
+
+## Render product schema mismatch follow-up
+
+- [x] Align `products.rating_average` PostgreSQL type with the Java `double` mapping through a forward migration.
+- [x] Run Java verification and provide the next Render redeploy action after the rating migration update.

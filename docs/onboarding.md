@@ -70,6 +70,8 @@ ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shi
 
 If the next Render startup error identifies `password_reset_tokens.token_hash` or `email_verification_tokens.token_hash` as PostgreSQL `bpchar`, deploy the version containing `V8__auth_token_hash_varchar.sql`. It converts both `CHAR(64)` hash columns to `VARCHAR(64)` using `BTRIM`.
 
+If the error identifies `products.rating_average` as PostgreSQL `NUMERIC` while Hibernate expects `FLOAT`, deploy the version containing `V10__product_rating_double.sql`. It converts the existing values to `DOUBLE PRECISION`.
+
 The complete manual Neon repair SQL is:
 
 ```sql
@@ -80,6 +82,7 @@ ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shi
 ALTER TABLE password_reset_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
 ALTER TABLE email_verification_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
 ALTER TABLE payment_events ALTER COLUMN payload_hash TYPE VARCHAR(64) USING BTRIM(payload_hash);
+ALTER TABLE products ALTER COLUMN rating_average TYPE DOUBLE PRECISION USING rating_average::DOUBLE PRECISION;
 ```
 
 Run the SQL in Neon only if Flyway has not applied V6, V7, V8, or V9, then redeploy. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.
