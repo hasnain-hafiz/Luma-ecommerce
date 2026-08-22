@@ -275,3 +275,8 @@
 ## Render V7 documentation correction
 
 - [x] Add the V7 `shipping_country` repair SQL to onboarding so manual Neon recovery covers the latest Render error.
+
+## Render authentication schema mismatch follow-up
+
+- [x] Convert authentication token hash columns defined as fixed-width CHAR to VARCHAR-compatible types for Hibernate validation.
+- [x] Run Java verification and provide the next Render redeploy action after the authentication migration update.

@@ -68,4 +68,17 @@ ALTER TABLE checkout_drafts ALTER COLUMN shipping_country TYPE VARCHAR(2) USING 
 ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
 ```
 
-Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.
+If the next Render startup error identifies `password_reset_tokens.token_hash` or `email_verification_tokens.token_hash` as PostgreSQL `bpchar`, deploy the version containing `V8__auth_token_hash_varchar.sql`. It converts both `CHAR(64)` hash columns to `VARCHAR(64)` using `BTRIM`.
+
+The complete manual Neon repair SQL is:
+
+```sql
+ALTER TABLE checkout_drafts ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+ALTER TABLE orders ALTER COLUMN currency TYPE VARCHAR(3) USING BTRIM(currency);
+ALTER TABLE checkout_drafts ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
+ALTER TABLE orders ALTER COLUMN shipping_country TYPE VARCHAR(2) USING BTRIM(shipping_country);
+ALTER TABLE password_reset_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
+ALTER TABLE email_verification_tokens ALTER COLUMN token_hash TYPE VARCHAR(64) USING BTRIM(token_hash);
+```
+
+Run the SQL in Neon only if Flyway has not applied V6, V7, or V8, then redeploy. Do not change `spring.jpa.hibernate.ddl-auto` to `update` or `create`; production remains schema-validated and migration-controlled.
