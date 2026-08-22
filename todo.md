@@ -266,3 +266,8 @@
 
 - [x] Align `checkout_drafts.currency` PostgreSQL type with the Java entity and add a forward-safe migration for existing Neon databases.
 - [x] Run Java verification and provide the exact Neon migration/deployment retry steps.
+
+## Render schema mismatch follow-up
+
+- [x] Convert all checkout draft and order snapshot fixed-width CHAR columns that map to Java String fields, including `shipping_country`.
+- [x] Run Java tests and provide Render redeploy guidance after the migration update.
