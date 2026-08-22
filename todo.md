@@ -299,3 +299,12 @@
 ## Render deployment verification
 
 - [x] Verify the deployed Render API health and Actuator endpoints and configure the storefront API base URL to `https://luma-ecommerce.onrender.com`.
+
+## Live catalog and cart adapter
+
+- [x] Add a typed frontend client for the deployed catalog and cart endpoints with fallback/error states.
+- [ ] Replace storefront-local product/cart reads with live API data where authenticated and available, preserving safe preview fallback.
+
+## Commerce client auth parity
+
+- [x] Ensure catalog and cart mutations use the same JWT bearer-token and cookie credential bridge as order reads.
