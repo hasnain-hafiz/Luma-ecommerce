@@ -308,3 +308,7 @@
 ## Commerce client auth parity
 
 - [x] Ensure catalog and cart mutations use the same JWT bearer-token and cookie credential bridge as order reads.
+
+## Razorpay webhook secret configuration
+
+- [x] Store the supplied Razorpay webhook secret securely and validate the configured secret bridge with Vitest; 5 files and 9 tests pass.
