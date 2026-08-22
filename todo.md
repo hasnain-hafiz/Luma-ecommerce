@@ -312,3 +312,7 @@
 ## Razorpay webhook secret configuration
 
 - [x] Store the supplied Razorpay webhook secret securely and validate the configured secret bridge with Vitest; 5 files and 9 tests pass.
+
+## Vercel frontend deployment
+
+- [x] Prepare the frontend for Vercel deployment, verify the connected Vercel project state, validate the production build, and document required environment variables and publish steps.
