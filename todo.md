@@ -290,3 +290,8 @@
 
 - [x] Align `products.rating_average` PostgreSQL type with the Java `double` mapping through a forward migration.
 - [x] Run Java verification and provide the next Render redeploy action after the rating migration update.
+
+## Render Spring bean wiring follow-up
+
+- [x] Fix `InventoryReservationService` construction so Spring can instantiate the checkout dependency in production.
+- [x] Run Java verification and provide the next Render redeploy action after the wiring fix.

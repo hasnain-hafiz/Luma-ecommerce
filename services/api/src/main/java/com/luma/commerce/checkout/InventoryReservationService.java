@@ -2,6 +2,7 @@ package com.luma.commerce.checkout;
 
 import com.luma.commerce.catalog.ProductRepository;
 import java.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InventoryReservationService {
   private final InventoryReservationRepository reservations; private final ProductRepository products; private final OrderRepository orders; private final CheckoutDraftRepository drafts;
   public InventoryReservationService(InventoryReservationRepository reservations, ProductRepository products, OrderRepository orders) { this(reservations, products, orders, null); }
+  @Autowired
   public InventoryReservationService(InventoryReservationRepository reservations, ProductRepository products, OrderRepository orders, CheckoutDraftRepository drafts) { this.reservations = reservations; this.products = products; this.orders = orders; this.drafts = drafts; }
 
   @Transactional
